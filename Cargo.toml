@@ -1,0 +1,8 @@
+[package]
+name = "physics-rs"
+version = "0.1.0"
+authors = ["Dante Falzone <dante.j.falzone@protonmail.com>"]
+edition = "2018"
+
+[dependencies]
+sdl2 = "0.32"
