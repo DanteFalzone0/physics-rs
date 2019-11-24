@@ -23,6 +23,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use std::time::Duration;
 
+/* bring the Particle stuff into scope */
 mod particle;
 use particle::Particle;
 
@@ -56,6 +57,7 @@ fn main() -> Result<(), String> {
     let mut prev_particles = vec![particle::new(); particle_ct];
     let mut mouse_particle = particle::new();
 
+    // Initialize the particles to be arranged in a circle of radius 20
     for i in 0..particle_ct {
         particles[i].x_pos =
             window_dim as f32 / 2.0 + 20.0 * (i as f32).sin();
@@ -64,15 +66,18 @@ fn main() -> Result<(), String> {
     }
 
     'game_loop: loop {
+        /* Hide the mouse cursor if it's on the window */
         sdl_context.mouse().show_cursor(false);
 
         renderer.set_draw_color(Color::RGB(0, 0, 0));
         renderer.clear();
 
+        /* copy the old state of the particles */
         for i in 0..particle_ct {
             prev_particles[i] = particles[i];
         }
 
+        /* update the state of the mouse particle */
         let mouse_info = event_pump.mouse_state();
         let prev_mouse_x = mouse_particle.x_pos;
         let prev_mouse_y = mouse_particle.y_pos;
@@ -95,6 +100,10 @@ fn main() -> Result<(), String> {
                         particles[i].y_pos
                       - prev_particles[j].y_pos;
 
+                    /* The method `f32.hypot()` is great because
+                       it means we don't have to write an `is_distance()`
+                       function like we did in `geometry.c` for the C
+                       version of this project. */
                     if x_diff.hypot(y_diff) <= 1.5 {
                         particles[i].collide_with(
                             prev_particles[j]
@@ -124,8 +133,10 @@ fn main() -> Result<(), String> {
             );
         }
 
+        // 31337 h4X0Rz 6R33N color
         renderer.set_draw_color(Color::RGB(0, 255, 50));
 
+        // draw the particles
         for i in 0..particle_ct {
             renderer.draw_point(
                 Point::new(
@@ -135,6 +146,7 @@ fn main() -> Result<(), String> {
             ).map_err(|e| e.to_string())?;
         }
 
+        // draw the cursor
         renderer.set_draw_color(Color::RGB(255, 10, 0));
         for x in -2_i32..3_i32 {
             for y in -2_i32..3_i32 {
@@ -151,6 +163,7 @@ fn main() -> Result<(), String> {
 
         renderer.present();
 
+        // check to see if the close button or the X key have been pressed
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit { .. } => break 'game_loop,
@@ -159,14 +172,13 @@ fn main() -> Result<(), String> {
                     if keycode == Keycode::X {
                         println!("Closing the program.");
                         break 'game_loop;
-                    } else if keycode == Keycode::A {
-                        println!("You pressed A!");
                     }
                 },
 
                 _ => {}
             }
         }
+        // let the frame rate equal 60fps
         ::std::thread::sleep(
             Duration::new(
                 0,
