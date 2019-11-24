@@ -17,7 +17,6 @@
 
 extern crate sdl2;
 use sdl2::pixels::Color;
-use sdl2::mouse::Cursor;
 use sdl2::rect::Point;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -25,13 +24,12 @@ use std::time::Duration;
 
 /* bring the Particle stuff into scope */
 mod particle;
-use particle::Particle;
 
 fn main() -> Result<(), String> {
     // size of the window
     let window_dim = 400;
 
-    // number of paritcles
+    // number of particles
     let particle_ct = 256;
 
     let sdl_context = sdl2::init()?; // initialize the SDL stuff
